@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Freelance Rate Calculator — Work Out Your Hourly Rate</title>
+<meta name="description" content="A free freelance rate calculator. Enter your income goal, expenses, tax rate and billable hours to estimate the hourly, daily and annual rates you need. No sign-up.">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Freelance Rate Calculator">
+<meta property="og:description" content="Estimate the hourly rate you need to reach your income goal, after tax, expenses and non-billable time.">
+<meta property="og:type" content="website">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7f9; --card:#ffffff; --ink:#15181d; --muted:#666e7a;
+  --line:#e2e6ec; --accent:#2f6df6; --accent-soft:#eaf0ff; --err:#c0392b;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101317; --card:#181c22; --ink:#eef1f5; --muted:#9aa3ae;
+    --line:#2a3039; --accent:#6f9bff; --accent-soft:#1d2635; --err:#ff8a7a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101317; --card:#181c22; --ink:#eef1f5; --muted:#9aa3ae;
+  --line:#2a3039; --accent:#6f9bff; --accent-soft:#1d2635; --err:#ff8a7a;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 64px}
+header{margin-bottom:24px}
+h1{font-size:1.6rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+label{display:block;font-size:.88rem;font-weight:600;margin-bottom:6px}
+.hint{font-weight:400;color:var(--muted);font-size:.8rem}
+.field{position:relative}
+input{
+  width:100%;padding:11px 12px;font-size:1rem;color:var(--ink);
+  background:var(--bg);border:1px solid var(--line);border-radius:9px;
+}
+input:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[aria-invalid="true"]{border-color:var(--err)}
+.err{color:var(--err);font-size:.78rem;margin-top:4px;min-height:1em}
+.results{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.res{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:14px}
+.res .k{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.res .v{font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin-top:4px}
+.res.main{background:var(--accent-soft);border-color:var(--accent)}
+.res.main .v{color:var(--accent)}
+details{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+summary{cursor:pointer;font-weight:600;font-size:.92rem}
+.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;
+  background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;
+  overflow-x:auto;white-space:pre;margin:8px 0}
+ol{padding-left:20px;font-size:.9rem;color:var(--muted)}
+ol b{color:var(--ink)}
+.banner{background:var(--accent-soft);border:1px solid var(--accent);color:var(--ink);
+  border-radius:10px;padding:12px;font-size:.88rem;margin-bottom:14px;display:none}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:24px;
+  border-top:1px solid var(--line);padding-top:20px}
+.hero{padding:8px 0 22px}
+.hero h1{font-size:clamp(1.7rem,6vw,2.5rem)}
+.hero p{max-width:60ch;font-size:1.02rem;color:var(--muted);margin:10px 0 0}
+section.prose{margin:40px 0}
+section.prose h2{font-size:clamp(1.25rem,4vw,1.6rem);text-transform:none;letter-spacing:-.02em;
+  color:var(--ink);margin:0 0 12px}
+section.prose h3{font-size:1rem;margin:18px 0 4px}
+section.prose p,section.prose li{color:var(--muted);font-size:.95rem}
+section.prose p{max-width:70ch}
+.cols{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.cols .card{margin:0}
+.cols .card h3{margin-top:0}
+.example table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:10px}
+.example th,.example td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+.example th{color:var(--muted);font-weight:600}
+.example td:last-child,.example th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.faq details{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px}
+.faq summary{color:var(--ink)}
+.faq p{margin:10px 0 0}
+.tools{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));list-style:none;padding:0}
+.tools li{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px}
+.tools b{display:block;font-size:.95rem;color:var(--ink)}
+.tools span{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+a.skip{position:absolute;left:-9999px}
+a.skip:focus{left:8px;top:8px;background:var(--card);padding:8px;border-radius:6px;z-index:9}
+</style>
+</head>
+<body>
+<a class="skip" href="#calculator">Skip to the calculator</a>
+<div class="wrap">
+<header class="hero">
+  <h1>Freelance Rate Calculator</h1>
+  <p>Estimate the hourly rate you need to charge to reach your income goal — after tax, business expenses and the hours you work but can't bill. Free, instant, and nothing leaves your browser.</p>
+</header>
+
+<main>
+<section class="card" id="calculator" aria-labelledby="calc-h">
+  <h2 id="calc-h">Your numbers</h2>
+  <div class="grid">
+    <div class="field">
+      <label for="income">Desired annual income <span class="hint">(take-home, after tax)</span></label>
+      <input id="income" type="number" inputmode="decimal" value="60000" min="1" step="1000" aria-describedby="e-income">
+      <div class="err" role="alert" aria-live="polite" id="e-income"></div>
+    </div>
+    <div class="field">
+      <label for="expenses">Monthly business expenses</label>
+      <input id="expenses" type="number" inputmode="decimal" value="500" min="0" step="50" aria-describedby="e-expenses">
+      <div class="err" role="alert" aria-live="polite" id="e-expenses"></div>
+    </div>
+    <div class="field">
+      <label for="vacation">Weeks of vacation per year</label>
+      <input id="vacation" type="number" inputmode="decimal" value="4" min="0" max="51" step="1" aria-describedby="e-vacation">
+      <div class="err" role="alert" aria-live="polite" id="e-vacation"></div>
+    </div>
+    <div class="field">
+      <label for="hours">Working hours per week</label>
+      <input id="hours" type="number" inputmode="decimal" value="40" min="0" max="168" step="1" aria-describedby="e-hours">
+      <div class="err" role="alert" aria-live="polite" id="e-hours"></div>
+    </div>
+    <div class="field">
+      <label for="billable">Billable time <span class="hint">(% of working hours)</span></label>
+      <input id="billable" type="number" inputmode="decimal" value="70" min="0" max="100" step="5" aria-describedby="e-billable">
+      <div class="err" role="alert" aria-live="polite" id="e-billable"></div>
+    </div>
+    <div class="field">
+      <label for="tax">Estimated tax rate <span class="hint">(%)</span></label>
+      <input id="tax" type="number" inputmode="decimal" value="25" min="0" max="99" step="1" aria-describedby="e-tax">
+      <div class="err" role="alert" aria-live="polite" id="e-tax"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Your rates</h2>
+  <div class="banner" id="banner"></div>
+  <div class="results">
+    <div class="res main"><div class="k">Recommended hourly rate</div><div class="v" id="r-rec">—</div></div>
+    <div class="res"><div class="k">Minimum hourly rate</div><div class="v" id="r-min">—</div></div>
+    <div class="res"><div class="k">Daily rate (8 h)</div><div class="v" id="r-day">—</div></div>
+    <div class="res"><div class="k">Monthly revenue target</div><div class="v" id="r-mon">—</div></div>
+    <div class="res"><div class="k">Annual revenue target</div><div class="v" id="r-year">—</div></div>
+    <div class="res"><div class="k">Billable hours / year</div><div class="v" id="r-hrs">—</div></div>
+  </div>
+
+  <details open>
+    <summary>How this is calculated</summary>
+    <ol id="steps">
+      <li><b>Billable hours</b> = (52 − vacation weeks) × hours per week × billable %</li>
+      <li><b>Pre-tax income</b> = desired income ÷ (1 − tax rate)</li>
+      <li><b>Annual revenue target</b> = pre-tax income + (monthly expenses × 12)</li>
+      <li><b>Minimum hourly rate</b> = annual revenue target ÷ billable hours</li>
+      <li><b>Recommended rate</b> = minimum × 1.15 (a 15% buffer for slow months, late payers and unexpected costs)</li>
+    </ol>
+    <div class="formula" id="live"></div>
+    <p class="sub">Tax is applied as a gross-up: you must earn more than your target income so that what is left after tax equals it. Expenses are added on top because they are not income. All figures are estimates — check local tax rules before pricing.</p>
+  </details>
+</section>
+
+<section class="prose" id="how-it-works" aria-labelledby="h-how">
+  <h2 id="h-how">How it works</h2>
+  <p>The calculator turns an income goal into an hourly rate by working backwards through the four things that sit between what a client pays you and what you keep.</p>
+  <div class="cols">
+    <article class="card"><h3>Billable hours</h3><p>The hours a client actually pays for. Your working week also contains admin, invoicing, proposals, marketing and learning. Only the billable slice earns money, so that is what the rate is divided by.</p></article>
+    <article class="card"><h3>Taxes</h3><p>Your income goal is what you want to keep. To be left with it after tax, you have to invoice more. The calculator divides by (1 − tax rate) rather than adding the percentage on top, which is the mathematically correct way to gross up.</p></article>
+    <article class="card"><h3>Business expenses</h3><p>Software, hardware, insurance, an accountant, a coworking desk. These are paid out of what you invoice, so twelve months of expenses are added on top of your income target.</p></article>
+    <article class="card"><h3>Minimum hourly rate</h3><p>The break-even point: the annual revenue target divided by your billable hours. Charge below this and, over a full year, you fall short of your goal.</p></article>
+    <article class="card"><h3>Recommended hourly rate</h3><p>The minimum plus a 15% buffer for quiet months, late payments and costs you didn't plan for. It is a starting point for your own pricing decision, not a number that is right for everyone.</p></article>
+  </div>
+</section>
+
+<section class="prose" aria-labelledby="h-2080">
+  <h2 id="h-2080">Why dividing your salary by 2,080 doesn't work</h2>
+  <p>2,080 is 40 hours × 52 weeks: the hours of a full-time employee who never takes a holiday. Using it as a freelancer produces a rate that is far too low, for four reasons.</p>
+  <ul>
+    <li><b>You take time off.</b> Nobody bills 52 weeks. Subtract your holidays, and public holidays if you take them.</li>
+    <li><b>Not every working hour is billable.</b> The time you spend finding clients, writing proposals, chasing invoices and keeping your skills current is real work that no client pays for directly.</li>
+    <li><b>An employer's cost is bigger than a salary.</b> Payroll taxes, equipment, software, insurance and paid leave are all carried by your employer. As a freelancer you carry them yourself.</li>
+    <li><b>Tax comes out of the invoice, not the salary.</b> A gross salary figure and a freelance invoice are not comparable numbers.</li>
+  </ul>
+  <p>The effect is not small. Once holidays and non-billable time are removed, the hours you can actually sell are typically a good deal fewer than 2,080 — and every hour removed pushes the required rate up.</p>
+</section>
+
+<section class="prose example" aria-labelledby="h-example">
+  <h2 id="h-example">A worked example</h2>
+  <p>Someone wants to keep $60,000 a year. They spend $500 a month on business costs, take 4 weeks off, work 40 hours a week, bill about 70% of that time, and estimate a 25% tax rate. Those are the values the calculator loads by default, so you can follow along above.</p>
+  <table>
+    <caption class="sub" style="text-align:left;padding:6px 0">Step by step</caption>
+    <tbody>
+      <tr><th scope="row">Working weeks</th><td>52 − 4 = 48</td></tr>
+      <tr><th scope="row">Billable hours</th><td>48 × 40 × 70% = 1,344 h</td></tr>
+      <tr><th scope="row">Pre-tax income needed</th><td>$60,000 ÷ (1 − 0.25) = $80,000</td></tr>
+      <tr><th scope="row">Annual expenses</th><td>$500 × 12 = $6,000</td></tr>
+      <tr><th scope="row">Annual revenue target</th><td>$80,000 + $6,000 = $86,000</td></tr>
+      <tr><th scope="row">Minimum hourly rate</th><td>$86,000 ÷ 1,344 h ≈ $63.99/h</td></tr>
+      <tr><th scope="row">Recommended hourly rate</th><td>$63.99 × 1.15 ≈ $73.58/h</td></tr>
+    </tbody>
+  </table>
+  <p>Dividing $60,000 by 2,080 would have suggested about $29/h — less than half of what this person needs to invoice to end up with the income they wanted.</p>
+</section>
+
+<section class="prose faq" id="faq" aria-labelledby="h-faq">
+  <h2 id="h-faq">Frequently asked questions</h2>
+  <details><summary>How do I calculate my freelance hourly rate?</summary><p>Start from the income you want to keep, gross it up for tax, add a year of business expenses, then divide by the hours you can realistically bill — not by every hour you work. That is exactly what the calculator above does, and it shows each step so you can check the arithmetic.</p></details>
+  <details><summary>How much should a freelancer charge per hour?</summary><p>There is no single correct figure. It depends on your costs, your tax situation, how much time you can bill, your experience and what your market will pay. The calculator gives you the floor your own numbers imply; where you price above that floor is a commercial decision, and comparing against rates in your field and country is worth doing before you commit.</p></details>
+  <details><summary>How many billable hours should a freelancer work?</summary><p>Most freelancers find that a meaningful share of the week goes to non-billable work, so billing every scheduled hour is unrealistic. Rather than aiming for a target percentage, track your own time for a few weeks and use the figure you actually observe — an honest number here matters more to the result than any other input.</p></details>
+  <details><summary>Should freelancers charge for non-billable hours?</summary><p>Not as line items on an invoice, usually — clients pay for outcomes, not your admin. Instead, non-billable time is priced into the hourly rate, which is why it appears in this calculation. If it isn't in your rate, you are absorbing it for free.</p></details>
+  <details><summary>Is this rate before or after tax?</summary><p>The rates shown are what you invoice, before tax. The income figure you enter is what you want to be left with afterwards.</p></details>
+  <details><summary>Does it work in my currency?</summary><p>The maths is currency-agnostic — only the formatting shows dollars. Enter your own figures and read the results in your own currency.</p></details>
+</section>
+
+<section class="prose" id="tools" aria-labelledby="h-tools">
+  <h2 id="h-tools">More free freelance tools</h2>
+  <p>In development. No sign-up will be required for any of them.</p>
+  <ul class="tools">
+    <li><b>Project Pricing Calculator</b><span>Coming soon</span></li>
+    <li><b>Day Rate Calculator</b><span>Coming soon</span></li>
+    <li><b>Retainer Calculator</b><span>Coming soon</span></li>
+    <li><b>Freelance Profit Calculator</b><span>Coming soon</span></li>
+  </ul>
+</section>
+</main>
+
+<footer>
+  <p>Runs entirely in your browser. No accounts, no tracking, no data sent anywhere.</p>
+  <p>These figures are estimates for planning purposes and are not tax or financial advice. Check the rules that apply where you live before setting your rate.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  var F = {
+    income:   {gt:0, lte:100000000, label:"Desired annual income",
+               msg:"Enter an annual income above 0 — there is no rate that reaches a goal of nothing."},
+    expenses: {gte:0, lte:10000000, label:"Monthly business expenses",
+               msg:"Business expenses can be 0, but not a negative number."},
+    vacation: {gte:0, lt:52,        label:"Weeks of vacation",
+               msg:"Enter 0 to 51 weeks. With 52 weeks off there are no working weeks left."},
+    hours:    {gt:0, lte:168,       label:"Working hours per week",
+               msg:"Enter more than 0 and at most 168 — that's every hour in a week."},
+    billable: {gt:0, lte:100,       label:"Billable time",
+               msg:"Enter more than 0% and at most 100% of your working hours."},
+    tax:      {gte:0, lt:100,       label:"Estimated tax rate",
+               msg:"Enter 0% or more, and below 100% — at 100% no income would be left."}
+  };
+  var ids = Object.keys(F);
+  var el = {};
+  ids.forEach(function(id){ el[id] = document.getElementById(id); });
+
+  var money = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+  var money2 = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2});
+  var num = new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
+
+  function validate(){
+    var vals = {}, ok = true;
+    ids.forEach(function(id){
+      var raw = el[id].value.trim();
+      var v = parseFloat(raw);
+      var rule = F[id], msg = "";
+      if(raw === "" || !isFinite(v)){
+        msg = "Please enter a number for " + rule.label.toLowerCase() + ".";
+      } else if(
+        (rule.gt  !== undefined && !(v >  rule.gt))  ||
+        (rule.gte !== undefined && !(v >= rule.gte)) ||
+        (rule.lt  !== undefined && !(v <  rule.lt))  ||
+        (rule.lte !== undefined && !(v <= rule.lte))
+      ){
+        msg = rule.msg;
+      }
+      var box = document.getElementById("e-"+id);
+      box.textContent = msg;
+      el[id].setAttribute("aria-invalid", msg ? "true" : "false");
+      if(msg){ ok = false; } else { vals[id] = v; }
+    });
+    return ok ? vals : null;
+  }
+
+  function blank(){
+    ["r-rec","r-min","r-day","r-mon","r-year","r-hrs"].forEach(function(i){
+      document.getElementById(i).textContent = "—";
+    });
+    document.getElementById("live").textContent = "Results are hidden until every field above has a valid value.";
+  }
+
+  function show(id, txt){ document.getElementById(id).textContent = txt; }
+
+  function calc(){
+    var v = validate();
+    var banner = document.getElementById("banner");
+    if(!v){ blank(); banner.style.display = "none"; return; }
+
+    var workWeeks    = 52 - v.vacation;
+    var billableHrs  = workWeeks * v.hours * (v.billable / 100);
+    var annualExp    = v.expenses * 12;
+    var preTax       = v.income / (1 - v.tax / 100);
+    var annualTarget = preTax + annualExp;
+    var minRate      = annualTarget / billableHrs;
+    var recRate      = minRate * 1.15;
+
+    show("r-rec",  money2.format(recRate));
+    show("r-min",  money2.format(minRate));
+    show("r-day",  money.format(recRate * 8));
+    show("r-mon",  money.format(annualTarget / 12));
+    show("r-year", money.format(annualTarget));
+    show("r-hrs",  num.format(billableHrs) + " h");
+
+    document.getElementById("live").textContent =
+      "Billable hours = (52 - " + v.vacation + ") x " + v.hours + " x " + v.billable + "% = " + num.format(billableHrs) + " h\n" +
+      "Pre-tax income = " + money.format(v.income) + " / (1 - " + v.tax + "%) = " + money.format(preTax) + "\n" +
+      "Annual target  = " + money.format(preTax) + " + " + money.format(annualExp) + " = " + money.format(annualTarget) + "\n" +
+      "Minimum rate   = " + money.format(annualTarget) + " / " + num.format(billableHrs) + " h = " + money2.format(minRate) + "/h\n" +
+      "Recommended    = " + money2.format(minRate) + " x 1.15 = " + money2.format(recRate) + "/h";
+
+    var notes = [];
+    if(billableHrs < 200) notes.push("Very few billable hours — the rate will look extreme.");
+    if(v.billable > 90) notes.push("Above 90% billable is rare; admin, sales and invoicing usually take 20–30% of the week.");
+    if(v.hours > 60) notes.push("Over 60 hours a week is hard to sustain year-round.");
+    if(v.tax > 60) notes.push("A tax rate above 60% pushes the required rate up steeply — double-check it.");
+    if(notes.length){ banner.textContent = notes.join(" "); banner.style.display = "block"; }
+    else banner.style.display = "none";
+  }
+
+  ids.forEach(function(id){
+    el[id].addEventListener("input", calc);
+    el[id].addEventListener("change", calc);
+    el[id].addEventListener("blur", calc);
+  });
+  calc();
+})();
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"How do I calculate my freelance hourly rate?","acceptedAnswer":{"@type":"Answer","text":"Start from the income you want to keep, gross it up for tax, add a year of business expenses, then divide by the hours you can realistically bill rather than by every hour you work."}},
+{"@type":"Question","name":"How much should a freelancer charge per hour?","acceptedAnswer":{"@type":"Answer","text":"There is no single correct figure. It depends on your costs, tax situation, billable time, experience and market. The calculator gives the floor your own numbers imply; pricing above it is a commercial decision."}},
+{"@type":"Question","name":"How many billable hours should a freelancer work?","acceptedAnswer":{"@type":"Answer","text":"Billing every scheduled hour is unrealistic because admin, sales and invoicing take real time. Track your own hours for a few weeks and use the percentage you actually observe."}},
+{"@type":"Question","name":"Should freelancers charge for non-billable hours?","acceptedAnswer":{"@type":"Answer","text":"Not as invoice line items. Non-billable time is priced into the hourly rate instead; if it is not in your rate, you absorb it for free."}}]}
+</script>
+</body>
+</html>
